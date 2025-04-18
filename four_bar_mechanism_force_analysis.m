@@ -8,7 +8,7 @@ l4 = 45.6;
 l_p = 10;
 l_vec = [l1, l2, l3, l4];
 
-w_2 = 2; %rad/s
+w_2 = -2; %rad/s CW
 alpha_2 = 0; %Constant w_2 
 
 th_1 = 0;
