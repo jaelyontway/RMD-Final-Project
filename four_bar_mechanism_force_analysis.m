@@ -5,7 +5,7 @@ l1 = 20;
 l2 = 42.1;
 l3 = 11.8;
 l4 = 45.6;
-l_p = 10;
+l_p = 7.8;
 l_vec = [l1, l2, l3, l4];
 
 w_2 = -2; %rad/s CW
@@ -15,11 +15,12 @@ th_1 = 0;
 spring_start_angle = 60; %deg
 spring_end_angle = 110; %deg 
 
+F_weight = 0.150*9.81 %
 %% Begin Analysis
 th_2_vec = linspace(180-spring_end_angle, 180-spring_start_angle);
 
 delta = -1; 
-delta_ap = 0;
+delta_ap = 45;
 
 for thIdx = 1:length(th_2_vec)
     % Position Analysis
@@ -53,12 +54,12 @@ gravity = 9.81;
 motor_stall_torque_converted = motor_stall_torque * gravity * 10; 
 
 %% Mechanical Advantage Cal
-r_input = 10; %Assumed 
+r_input = 42.1; %Assumed 
 r_output = l_vec(4);
 MA = (l_vec(4)/l_vec(2))*(r_input/r_output) * (sind(th_4_vec - th_3_vec) ./ sind(th_2_vec - th_3_vec));
 
 %% Convert torque_in to torque_out to Force out 
-k = 10; % N*mm/rad, Assumed torsional spring constant 
+k = 555; % N*mm/rad, Assumed torsional spring constant 
 
 spring_angle_vec = linspace(spring_start_angle, spring_end_angle, 100);  % 100 steps
 spring_angle_change = deg2rad(spring_angle_vec - spring_start_angle); 
@@ -72,16 +73,17 @@ F_out = tau_output / r_output;
 % F_out = F_in * MA;
 
 %% Transfer F_out to F_normal to the ground and F_transverse
-global_to_local = 210; %deg CCW 
+global_to_local = 240; %deg CCW 
 th_3_global = th_3_vec + global_to_local;
 th_3_calculate_normal_force = th_3_global - 180;
 
-F_normal = F_out .* cosd(th_3_calculate_normal_force);
+F_normal = F_out .* cosd(th_3_calculate_normal_force) + F_weight;
 F_transverse = F_out .* sind(th_3_calculate_normal_force);
 
 %% Velocity at the foot 
 V_normal = VPy * cosd(th_3_calculate_normal_force) + VPx * cosd(90 - th_3_calculate_normal_force);
 V_transverse = VPy * sind(th_3_calculate_normal_force) + VPx * sind(90 - th_3_calculate_normal_force);
+
 
 %% Acceleration at the foot 
 A_normal = APy * cosd(th_3_calculate_normal_force) + APx * cosd(90 - th_3_calculate_normal_force);
