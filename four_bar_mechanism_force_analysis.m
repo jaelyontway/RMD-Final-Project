@@ -14,13 +14,18 @@ alpha_2 = 0; %Constant w_2
 th_1 = 0;
 spring_start_angle = 60; %deg
 spring_end_angle = 110; %deg 
+global_to_local = 240; %deg CCW 
+delta = -1; 
+delta_ap = 45; %deg
 
-F_weight = 0.150*9.81 %
+r_input = 42.1; 
+r_output = l_vec(4);
+
+k = 555; % N*mm/rad, calculated using Spring Constant equation
+
+F_weight = 0.150*9.81; %
 %% Begin Analysis
 th_2_vec = linspace(180-spring_end_angle, 180-spring_start_angle);
-
-delta = -1; 
-delta_ap = 45;
 
 for thIdx = 1:length(th_2_vec)
     % Position Analysis
@@ -48,18 +53,10 @@ end
 th_3_vec = th_vec_out(3, :); 
 th_4_vec = th_vec_out(4, :);
 
-%% Motor Info
-motor_stall_torque = 1.3; %kg/cm
-gravity = 9.81;  
-motor_stall_torque_converted = motor_stall_torque * gravity * 10; 
-
 %% Mechanical Advantage Cal
-r_input = 42.1; %Assumed 
-r_output = l_vec(4);
 MA = (l_vec(4)/l_vec(2))*(r_input/r_output) * (sind(th_4_vec - th_3_vec) ./ sind(th_2_vec - th_3_vec));
 
 %% Convert torque_in to torque_out to Force out 
-k = 555; % N*mm/rad, Assumed torsional spring constant 
 
 spring_angle_vec = linspace(spring_start_angle, spring_end_angle, 100);  % 100 steps
 spring_angle_change = deg2rad(spring_angle_vec - spring_start_angle); 
@@ -73,7 +70,6 @@ F_out = tau_output / r_output;
 % F_out = F_in * MA;
 
 %% Transfer F_out to F_normal to the ground and F_transverse
-global_to_local = 240; %deg CCW 
 th_3_global = th_3_vec + global_to_local;
 th_3_calculate_normal_force = th_3_global - 180;
 
